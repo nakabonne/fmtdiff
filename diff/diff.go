@@ -1,4 +1,4 @@
-package fmtreporter
+package diff
 
 import (
 	"bytes"
@@ -9,16 +9,16 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/waigani/diffparser"
+	godiff "github.com/sourcegraph/go-diff/diff"
 )
 
-func Diff(b1, b2 []byte, filename string) (*diffparser.Diff, error) {
+func Diff(b1, b2 []byte, filename string) ([]*godiff.FileDiff, error) {
 	data, err := diff(b1, b2, filename)
 	if err != nil {
 		return nil, fmt.Errorf("error computing diff: %s", err)
 	}
 
-	ds, err := diffparser.Parse(string(data))
+	ds, err := godiff.ParseMultiFileDiff(data)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing diff: %s", err)
 	}

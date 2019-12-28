@@ -5,18 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/k0kubun/pp"
 	"golang.org/x/tools/imports"
 
-	diff "github.com/nakabonne/fmtreporter/diff"
-)
-
-var (
-	defaultOption = &Options{
-		Fragment:   true,
-		TabWidth:   8,
-		TabIndent:  true,
-		FormatOnly: true,
-	}
+	"github.com/nakabonne/fmtreporter/diff"
 )
 
 type Options struct {
@@ -29,6 +21,13 @@ type Options struct {
 	TabIndent  bool // Use tabs for indent (true if nil *Options provided)
 	TabWidth   int  // Tab width (8 if nil *Options provided)
 	FormatOnly bool // Disable the insertion and deletion of imports
+}
+
+var defaultOption = &Options{
+	Fragment:   true,
+	TabWidth:   8,
+	TabIndent:  true,
+	FormatOnly: true,
 }
 
 func Run(filename string, options *Options) ([]byte, error) {
@@ -58,10 +57,11 @@ func Run(filename string, options *Options) ([]byte, error) {
 		return nil, nil
 	}
 
-	_, err = diff.Diff(src, res, filename)
+	d, err := diff.Diff(src, res, filename)
 	if err != nil {
 		return nil, fmt.Errorf("error taking diffs: %s", err)
 	}
+	pp.Println(d)
 
 	return []byte{}, nil
 }
