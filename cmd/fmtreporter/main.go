@@ -25,8 +25,9 @@ func main() {
 		return
 	}
 
+	issues := []*fmtreporter.Issue{}
 	for _, path := range flagSet.Args() {
-		b, err := fmtreporter.Run(path, &fmtreporter.Options{
+		is, err := fmtreporter.Run(path, &fmtreporter.Options{
 			LocalPrefix: *localPrefix,
 			// TODO: Make these configuable as well.
 			Fragment:   true,
@@ -38,6 +39,9 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		fmt.Println(string(b))
+		issues = append(issues, is...)
+	}
+	for _, i := range issues {
+		fmt.Println(i.String())
 	}
 }

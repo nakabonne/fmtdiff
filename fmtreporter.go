@@ -3,6 +3,7 @@ package fmtreporter
 import (
 	"bytes"
 	"fmt"
+	"go/token"
 	"io/ioutil"
 
 	"github.com/k0kubun/pp"
@@ -10,6 +11,15 @@ import (
 
 	"github.com/nakabonne/fmtreporter/diff"
 )
+
+type Issue struct {
+	Text string
+	Pos  token.Position
+}
+
+func (i *Issue) String() string {
+	return fmt.Sprintf("%s:%d:%d: %s", i.Pos.Filename, i.Pos.Line, i.Pos.Column, i.Text)
+}
 
 type Options struct {
 	// LocalPrefix is a comma-separated string of import path prefixes, which, if
@@ -30,7 +40,7 @@ var defaultOption = &Options{
 	FormatOnly: true,
 }
 
-func Run(filename string, options *Options) ([]byte, error) {
+func Run(filename string, options *Options) ([]*Issue, error) {
 	if options == nil {
 		options = defaultOption
 	}
@@ -63,5 +73,9 @@ func Run(filename string, options *Options) ([]byte, error) {
 	}
 	pp.Println(d)
 
-	return []byte{}, nil
+	return []*Issue{
+		{
+			Text: "foo",
+		},
+	}, nil
 }
