@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 
 	"golang.org/x/tools/imports"
+
+	diff "github.com/nakabonne/fmtreporter/diff"
 )
 
 var (
@@ -56,10 +58,10 @@ func Run(filename string, options *Options) ([]byte, error) {
 		return nil, nil
 	}
 
-	data, err := diff(src, res, filename)
+	_, err = diff.Diff(src, res, filename)
 	if err != nil {
-		return nil, fmt.Errorf("error computing diff: %s", err)
+		return nil, fmt.Errorf("error taking diffs: %s", err)
 	}
 
-	return data, nil
+	return []byte{}, nil
 }

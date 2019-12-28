@@ -8,7 +8,22 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	"github.com/waigani/diffparser"
 )
+
+func Diff(b1, b2 []byte, filename string) (*diffparser.Diff, error) {
+	data, err := diff(b1, b2, filename)
+	if err != nil {
+		return nil, fmt.Errorf("error computing diff: %s", err)
+	}
+
+	ds, err := diffparser.Parse(string(data))
+	if err != nil {
+		return nil, fmt.Errorf("error parsing diff: %s", err)
+	}
+	return ds, nil
+}
 
 func diff(b1, b2 []byte, filename string) (data []byte, err error) {
 	f1, err := writeTempFile("", "gofmt", b1)
@@ -36,6 +51,7 @@ func diff(b1, b2 []byte, filename string) (data []byte, err error) {
 	}
 	return
 }
+
 func writeTempFile(dir, prefix string, data []byte) (string, error) {
 	file, err := ioutil.TempFile(dir, prefix)
 	if err != nil {
