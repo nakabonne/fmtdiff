@@ -28,10 +28,11 @@ func main() {
 	for _, path := range flagSet.Args() {
 		b, err := fmtreporter.Run(path, &fmtreporter.Options{
 			LocalPrefix: *localPrefix,
-			Fragment:    true,
-			TabWidth:    8,
-			TabIndent:   true,
-			FormatOnly:  true,
+			// TODO: Make these configuable as well.
+			Fragment:   true,
+			TabWidth:   8,
+			TabIndent:  true,
+			FormatOnly: true,
 		})
 		if err != nil {
 			fmt.Println(err)
