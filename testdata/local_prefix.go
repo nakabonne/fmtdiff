@@ -8,7 +8,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtreporter.Run("", "")
+	_, _ = fmtreporter.Run("", nil)
 	fmt.Println("fmt")
-	_, _ := unusedparam.Check(path)
+	_, _ = unusedparam.Check("")
 }

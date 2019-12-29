@@ -10,7 +10,8 @@ import (
 
 var (
 	flagSet     = flag.NewFlagSet("fmtreporter", flag.ContinueOnError)
-	localPrefix = flagSet.String("local-prefix", "", "put imports beginning with this string after 3rd-party packages; comma-separated list")
+	localPrefix = flagSet.String("local-prefix", "", "put imports beginning with this string after 3rd-party packages; comma-separated list.")
+	formatOnly  = flagSet.Bool("format-only", false, "if true, don't fix imports and only format. In this mode, goimports is effectively gofmt, with the addition that imports are grouped into sections.")
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 			Fragment:   true,
 			TabWidth:   8,
 			TabIndent:  true,
-			FormatOnly: true,
+			FormatOnly: *formatOnly,
 		})
 		if err != nil {
 			fmt.Println(err)
