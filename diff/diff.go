@@ -12,6 +12,7 @@ import (
 	godiff "github.com/sourcegraph/go-diff/diff"
 )
 
+// Diff parses a file unified diff.
 func Diff(b1, b2 []byte, filename string) (*godiff.FileDiff, error) {
 	data, err := diff(b1, b2, filename)
 	if err != nil {

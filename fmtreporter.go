@@ -9,59 +9,59 @@ import (
 	"github.com/nakabonne/fmtreporter/diff"
 )
 
+// FileDiff represents a diff between an original file and a formatted one.
 type FileDiff struct {
-	Name   string
+	// File name.
+	Name string
+	// Contents of original file.
 	Before []byte
-	After  []byte
-
+	// Contents of formatted file.
+	After []byte
 	Hunks []*Hunk
 }
 
-func (f *FileDiff) NoIssue() bool {
+// NoDiff checks if the original file and the formatted one
+// are the same length and contain the same bytes.
+func (f *FileDiff) NoDiff() bool {
 	return bytes.Equal(f.Before, f.After)
 }
 
+// Hunk represents a series of changes in a file's unified diff.
 type Hunk struct {
-	// starting line number in original file
+	// OrigStartLine is the starting line number in the original file.
 	OrigStartLine int
-	// number of lines the hunk applies to in the original file
+	// OrigLines is the number of lines the hunk applies to in the original file.
 	OrigLines int
-	// if > 0, then the original file had a 'No newline at end of file' mark at this offset
-	OrigNoNewlineAt int
-	// starting line number in new file
+	// NewStartLine is the starting line number in the new file.
 	NewStartLine int
-	// number of lines the hunk applies to in the new file
+	// NewLines is the number of lines the hunk applies to in the new file.
 	NewLines int
-	// optional section heading
-	Section string
-	// 0-indexed line offset in unified file diff (including section headers); this is
-	// only set when Hunks are read from entire file diff (i.e., when ReadAllHunks is
-	// called) This accounts for hunk headers, too, so the StartPosition of the first
-	// hunk will be 1.
-	StartPosition int
-	// hunk body (lines prefixed with '-', '+', or ' ')
-	Body []byte
+	Body     []byte
 }
 
+// Options makes it possible to fine-tune behavior.
 type Options struct {
 	// LocalPrefix is a comma-separated string of import path prefixes, which, if
 	// set, instructs Process to sort the import paths with the given prefixes
 	// into another group after 3rd-party packages.
 	LocalPrefix string
-
-	Fragment   bool // Accept fragment of a source file (no package statement)
-	TabIndent  bool // Use tabs for indent (true if nil *Options provided)
-	TabWidth   int  // Tab width (8 if nil *Options provided)
-	FormatOnly bool // Disable the insertion and deletion of imports
+	// Accept fragment of a source file (no package statement).
+	Fragment bool
+	// Use tabs for indent. True is populated if nil provided.
+	TabIndent bool
+	// 8 is populated if nil provided.
+	TabWidth int
+	// Disable the insertion and deletion of imports.
+	FormatOnly bool
 }
 
 var defaultOption = &Options{
-	Fragment:   true,
-	TabWidth:   8,
-	TabIndent:  true,
-	FormatOnly: true,
+	Fragment:  true,
+	TabWidth:  8,
+	TabIndent: true,
 }
 
+// Run runs goimports and parses the diff between an original file and a formatted one.
 func Run(filename string, options *Options) (*FileDiff, error) {
 	fileDiff := &FileDiff{Name: filename}
 	if options == nil {
@@ -87,7 +87,7 @@ func Run(filename string, options *Options) (*FileDiff, error) {
 	}
 	fileDiff.After = res
 
-	if fileDiff.NoIssue() {
+	if fileDiff.NoDiff() {
 		return fileDiff, nil
 	}
 
@@ -98,14 +98,11 @@ func Run(filename string, options *Options) (*FileDiff, error) {
 	fileDiff.Hunks = make([]*Hunk, 0, len(d.Hunks))
 	for _, h := range d.Hunks {
 		fileDiff.Hunks = append(fileDiff.Hunks, &Hunk{
-			OrigStartLine:   int(h.OrigStartLine),
-			OrigLines:       int(h.OrigLines),
-			OrigNoNewlineAt: int(h.OrigNoNewlineAt),
-			NewStartLine:    int(h.NewStartLine),
-			NewLines:        int(h.NewLines),
-			Section:         h.Section,
-			StartPosition:   int(h.StartPosition),
-			Body:            h.Body,
+			OrigStartLine: int(h.OrigStartLine),
+			OrigLines:     int(h.OrigLines),
+			NewStartLine:  int(h.NewStartLine),
+			NewLines:      int(h.NewLines),
+			Body:          h.Body,
 		})
 	}
 
