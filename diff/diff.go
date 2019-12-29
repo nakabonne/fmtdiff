@@ -12,17 +12,17 @@ import (
 	godiff "github.com/sourcegraph/go-diff/diff"
 )
 
-func Diff(b1, b2 []byte, filename string) ([]*godiff.FileDiff, error) {
+func Diff(b1, b2 []byte, filename string) (*godiff.FileDiff, error) {
 	data, err := diff(b1, b2, filename)
 	if err != nil {
 		return nil, fmt.Errorf("error computing diff: %s", err)
 	}
 
-	ds, err := godiff.ParseMultiFileDiff(data)
+	d, err := godiff.ParseFileDiff(data)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing diff: %s", err)
 	}
-	return ds, nil
+	return d, nil
 }
 
 func diff(b1, b2 []byte, filename string) (data []byte, err error) {

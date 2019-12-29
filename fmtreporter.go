@@ -6,7 +6,6 @@ import (
 	"go/token"
 	"io/ioutil"
 
-	"github.com/k0kubun/pp"
 	"golang.org/x/tools/imports"
 
 	"github.com/nakabonne/fmtreporter/diff"
@@ -63,19 +62,26 @@ func Run(filename string, options *Options) ([]*Issue, error) {
 	}
 
 	if bytes.Equal(src, res) {
-		fmt.Println("the two files are the same length and contain the same bytes")
-		return nil, nil
+		return []*Issue{}, nil
 	}
 
 	d, err := diff.Diff(src, res, filename)
 	if err != nil {
 		return nil, fmt.Errorf("error taking diffs: %s", err)
 	}
-	pp.Println(d)
+	//	pp.Println(d)
+	issues := make([]*Issue, 0, len(d.Hunks))
+	for _, h := range d.Hunks {
+		issues = append(issues, &Issue{
+			Text: "This hunk should be fixed as shown below:\n" + string(h.Body),
+			Pos: token.Position{
+				Filename: d.NewName,
+				Offset:   0,
+				Line:     int(h.NewLines),
+				Column:   0,
+			},
+		})
+	}
 
-	return []*Issue{
-		{
-			Text: "foo",
-		},
-	}, nil
+	return issues, nil
 }
