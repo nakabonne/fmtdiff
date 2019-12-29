@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/k0kubun/pp"
 	"github.com/nakabonne/fmtreporter"
 )
 
@@ -26,9 +27,9 @@ func main() {
 		return
 	}
 
-	issues := []*fmtreporter.Issue{}
+	fileDiffs := []*fmtreporter.FileDiff{}
 	for _, path := range flagSet.Args() {
-		is, err := fmtreporter.Run(path, &fmtreporter.Options{
+		fs, err := fmtreporter.Run(path, &fmtreporter.Options{
 			LocalPrefix: *localPrefix,
 			// TODO: Make these configuable as well.
 			Fragment:   true,
@@ -40,9 +41,9 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		issues = append(issues, is...)
+		fileDiffs = append(fileDiffs, fs)
 	}
-	for _, i := range issues {
-		fmt.Println(i.String())
+	for _, f := range fileDiffs {
+		pp.Println(f)
 	}
 }

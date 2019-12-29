@@ -2,8 +2,6 @@ package fmtreporter
 
 import (
 	"bytes"
-	"fmt"
-	"go/token"
 	"io/ioutil"
 
 	"golang.org/x/tools/imports"
@@ -11,13 +9,38 @@ import (
 	"github.com/nakabonne/fmtreporter/diff"
 )
 
-type Issue struct {
-	Text string
-	Pos  token.Position
+type FileDiff struct {
+	Name   string
+	Before []byte
+	After  []byte
+
+	Hunks []*Hunk
 }
 
-func (i *Issue) String() string {
-	return fmt.Sprintf("%s:%d:%d: %s", i.Pos.Filename, i.Pos.Line, i.Pos.Column, i.Text)
+func (f *FileDiff) NoIssue() bool {
+	return bytes.Equal(f.Before, f.After)
+}
+
+type Hunk struct {
+	// starting line number in original file
+	OrigStartLine int
+	// number of lines the hunk applies to in the original file
+	OrigLines int
+	// if > 0, then the original file had a 'No newline at end of file' mark at this offset
+	OrigNoNewlineAt int
+	// starting line number in new file
+	NewStartLine int
+	// number of lines the hunk applies to in the new file
+	NewLines int
+	// optional section heading
+	Section string
+	// 0-indexed line offset in unified file diff (including section headers); this is
+	// only set when Hunks are read from entire file diff (i.e., when ReadAllHunks is
+	// called) This accounts for hunk headers, too, so the StartPosition of the first
+	// hunk will be 1.
+	StartPosition int
+	// hunk body (lines prefixed with '-', '+', or ' ')
+	Body []byte
 }
 
 type Options struct {
@@ -39,7 +62,8 @@ var defaultOption = &Options{
 	FormatOnly: true,
 }
 
-func Run(filename string, options *Options) ([]*Issue, error) {
+func Run(filename string, options *Options) (*FileDiff, error) {
+	fileDiff := &FileDiff{Name: filename}
 	if options == nil {
 		options = defaultOption
 	}
@@ -48,6 +72,7 @@ func Run(filename string, options *Options) ([]*Issue, error) {
 	if err != nil {
 		return nil, err
 	}
+	fileDiff.Before = src
 
 	imports.LocalPrefix = options.LocalPrefix
 	res, err := imports.Process(filename, src, &imports.Options{
@@ -60,28 +85,29 @@ func Run(filename string, options *Options) ([]*Issue, error) {
 	if err != nil {
 		return nil, err
 	}
+	fileDiff.After = res
 
-	if bytes.Equal(src, res) {
-		return []*Issue{}, nil
+	if fileDiff.NoIssue() {
+		return fileDiff, nil
 	}
 
 	d, err := diff.Diff(src, res, filename)
 	if err != nil {
-		return nil, fmt.Errorf("error taking diffs: %s", err)
+		return nil, err
 	}
-	//	pp.Println(d)
-	issues := make([]*Issue, 0, len(d.Hunks))
+	fileDiff.Hunks = make([]*Hunk, 0, len(d.Hunks))
 	for _, h := range d.Hunks {
-		issues = append(issues, &Issue{
-			Text: "This hunk should be fixed as shown below:\n" + string(h.Body),
-			Pos: token.Position{
-				Filename: d.NewName,
-				Offset:   0,
-				Line:     int(h.NewLines),
-				Column:   0,
-			},
+		fileDiff.Hunks = append(fileDiff.Hunks, &Hunk{
+			OrigStartLine:   int(h.OrigStartLine),
+			OrigLines:       int(h.OrigLines),
+			OrigNoNewlineAt: int(h.OrigNoNewlineAt),
+			NewStartLine:    int(h.NewStartLine),
+			NewLines:        int(h.NewLines),
+			Section:         h.Section,
+			StartPosition:   int(h.StartPosition),
+			Body:            h.Body,
 		})
 	}
 
-	return issues, nil
+	return fileDiff, nil
 }
