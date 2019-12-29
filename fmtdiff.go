@@ -1,4 +1,4 @@
-package fmtreporter
+package fmtdiff
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/tools/imports"
 
-	"github.com/nakabonne/fmtreporter/diff"
+	"github.com/nakabonne/fmtdiff/diff"
 )
 
 // FileDiff represents a diff between an original file and a formatted one.
