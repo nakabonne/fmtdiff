@@ -10,7 +10,7 @@ import (
 
 var (
 	flagSet     = flag.NewFlagSet("fmtreporter", flag.ContinueOnError)
-	localPrefix = flagSet.String("local-prefix", "", "local prefix")
+	localPrefix = flagSet.String("local-prefix", "", "put imports beginning with this string after 3rd-party packages; comma-separated list")
 )
 
 func main() {
