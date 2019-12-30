@@ -20,10 +20,6 @@ func TestRun(t *testing.T) {
 			filename: "testdata/local_prefix.go",
 			options: &Options{
 				LocalPrefix: localPrefix,
-				Fragment:    true,
-				TabWidth:    8,
-				TabIndent:   true,
-				FormatOnly:  false,
 			},
 			expected: &FileDiff{
 				Name: "testdata/local_prefix.go",

@@ -47,25 +47,28 @@ type Options struct {
 	LocalPrefix string
 	// Accept fragment of a source file (no package statement).
 	Fragment bool
-	// Use tabs for indent. True is populated if nil provided.
-	TabIndent bool
-	// 8 is populated if nil provided.
+	// Report all errors (not just the first 10 on different lines).
+	AllErrors bool
+	// Do not print comments.
+	IgnoreComments bool
+	// Use spaces for indent.
+	SpaceIndent bool
+	// 8 is populated if zero provided.
 	TabWidth int
 	// Disable the insertion and deletion of imports.
 	FormatOnly bool
 }
 
-var defaultOption = &Options{
-	Fragment:  true,
-	TabWidth:  8,
-	TabIndent: true,
-}
+var defaultTabWidth = 8
 
 // Run runs goimports and parses the diff between an original file and a formatted one.
 func Run(filename string, options *Options) (*FileDiff, error) {
 	fileDiff := &FileDiff{Name: filename}
 	if options == nil {
-		options = defaultOption
+		options = &Options{}
+	}
+	if options.TabWidth == 0 {
+		options.TabWidth = defaultTabWidth
 	}
 
 	src, err := ioutil.ReadFile(filename)
@@ -76,9 +79,10 @@ func Run(filename string, options *Options) (*FileDiff, error) {
 
 	imports.LocalPrefix = options.LocalPrefix
 	res, err := imports.Process(filename, src, &imports.Options{
-		Comments:   true,
 		Fragment:   options.Fragment,
-		TabIndent:  options.TabIndent,
+		AllErrors:  options.AllErrors,
+		Comments:   !options.IgnoreComments,
+		TabIndent:  !options.SpaceIndent,
 		TabWidth:   options.TabWidth,
 		FormatOnly: options.FormatOnly,
 	})
