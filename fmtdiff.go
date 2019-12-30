@@ -3,6 +3,7 @@ package fmtdiff
 import (
 	"bytes"
 	"io/ioutil"
+	"strings"
 
 	"golang.org/x/tools/imports"
 
@@ -41,21 +42,21 @@ type Hunk struct {
 
 // Options makes it possible to fine-tune behavior.
 type Options struct {
-	// LocalPrefix is a comma-separated string of import path prefixes, which, if
-	// set, instructs Process to sort the import paths with the given prefixes
-	// into another group after 3rd-party packages.
-	LocalPrefix string
-	// Accept fragment of a source file (no package statement).
+	// LocalPrefixes is a set of import path prefixes, which, if set,
+	// instructs Process to sort the import paths with the given prefixes
+	// into another group after 3rd-party packages. Empty list by default.
+	LocalPrefixes []string
+	// Accept fragment of a source file (no package statement). False by default.
 	Fragment bool
-	// Report all errors (not just the first 10 on different lines).
+	// Report all errors (not just the first 10 on different lines). False by default.
 	AllErrors bool
-	// Do not print comments.
+	// Do not print comments. False by default.
 	IgnoreComments bool
-	// Use spaces for indent.
+	// Use spaces for indent. False by default.
 	SpaceIndent bool
 	// 8 is populated if zero provided.
 	TabWidth int
-	// Disable the insertion and deletion of imports.
+	// Disable the insertion and deletion of imports. False by default.
 	FormatOnly bool
 }
 
@@ -77,7 +78,7 @@ func Run(filename string, options *Options) (*FileDiff, error) {
 	}
 	fileDiff.Before = src
 
-	imports.LocalPrefix = options.LocalPrefix
+	imports.LocalPrefix = strings.Join(options.LocalPrefixes, ",")
 	res, err := imports.Process(filename, src, &imports.Options{
 		Fragment:   options.Fragment,
 		AllErrors:  options.AllErrors,

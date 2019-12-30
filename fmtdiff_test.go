@@ -19,7 +19,7 @@ func TestRun(t *testing.T) {
 			name:     "local package is grouped into 3rd-party packages",
 			filename: "testdata/local_prefix.go",
 			options: &Options{
-				LocalPrefix: localPrefix,
+				LocalPrefixes: []string{localPrefix},
 			},
 			expected: &FileDiff{
 				Name: "testdata/local_prefix.go",
@@ -73,6 +73,48 @@ func _() {
 `),
 					},
 				},
+			},
+			wantErr: false,
+		},
+		{
+			name:     "set multiple prefixes as local packages",
+			filename: "testdata/local_prefix.go",
+			options: &Options{
+				LocalPrefixes: []string{localPrefix, "github.com/nakabonne/unusedparam"},
+			},
+			expected: &FileDiff{
+				Name: "testdata/local_prefix.go",
+				Before: []byte(`package testdata
+
+import (
+	"fmt"
+
+	"github.com/nakabonne/fmtdiff"
+	"github.com/nakabonne/unusedparam/pkg/unusedparam"
+)
+
+func _() {
+	_, _ = fmtdiff.Run("", nil)
+	fmt.Println("fmt")
+	_, _ = unusedparam.Check("")
+}
+`),
+				After: []byte(`package testdata
+
+import (
+	"fmt"
+
+	"github.com/nakabonne/fmtdiff"
+	"github.com/nakabonne/unusedparam/pkg/unusedparam"
+)
+
+func _() {
+	_, _ = fmtdiff.Run("", nil)
+	fmt.Println("fmt")
+	_, _ = unusedparam.Check("")
+}
+`),
+				Hunks: nil,
 			},
 			wantErr: false,
 		},
