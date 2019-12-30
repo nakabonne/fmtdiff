@@ -37,7 +37,9 @@ type Hunk struct {
 	NewStartLine int
 	// NewLines is the number of lines the hunk applies to in the new file.
 	NewLines int
-	Body     []byte
+	// Body is lines prefixed with '-', '+', or ' '.
+	// The number of lines of context to show is three.
+	Body []byte
 }
 
 // Options makes it possible to fine-tune behavior.

@@ -2,7 +2,7 @@
 
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/nakabonne/fmtdiff)
 
-A `goimports` client as well as a parser that parses the diff between an original file and a formatted one.  
+A `goimports` client as well as a parser that parses the diff between an original file and one formatted by it.  
 
 goimports not only fixes imports, but also formats your code in the same style as gofmt, so `fmtdiff` means `importsdiff` substantially.
 
@@ -17,15 +17,17 @@ go get github.com/nakabonne/fmtdiff
 ```go
 package main	
 
-import "github.com/nakabonne/fmtreporter"	
+import "github.com/nakabonne/fmtdiff"
 
 func main() {	
-	fileDiff, _ := fmtreporter.Run("/path/to/foo.go", &fmtreporter.Options{	
-		LocalPrefix: "github.com/orgA/repoB",	
-		Fragment:   true,	
-		TabWidth:   8,	
-		TabIndent:  true,	
-		FormatOnly: true,
+	fileDiff, _ := fmtdiff.Run("/path/to/foo.go", &fmtdiff.Options{
+		LocalPrefixes:  []string{"github.com/myOrg/myRepo"},
+                IgnoreComments: true,
+                FormatOnly:     true,
 	})	
 }
 ```
+
+## Thanks
+
+Thanks to [sourcegraph/go-diff](https://github.com/sourcegraph/go-diff) for cool diff parser.
