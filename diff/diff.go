@@ -1,3 +1,7 @@
+// Copyright 2013 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package diff
 
 import (
@@ -12,7 +16,7 @@ import (
 	godiff "github.com/sourcegraph/go-diff/diff"
 )
 
-// Diff parses a file unified diff.
+// Diff computes a diff and parses a file unified diff.
 func Diff(b1, b2 []byte, filename string) (*godiff.FileDiff, error) {
 	data, err := diff(b1, b2, filename)
 	if err != nil {
