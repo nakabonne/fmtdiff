@@ -1,6 +1,7 @@
 # fmtdiff
 
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/nakabonne/fmtdiff)
+[![codecov](https://codecov.io/gh/nakabonne/fmtdiff/branch/master/graph/badge.svg)](https://codecov.io/gh/nakabonne/fmtdiff)
 
 A `goimports` client as well as a parser that parses the diff between an original file and one formatted by it.  
 
