@@ -8,7 +8,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtdiff.Run("", nil)
+	_, _ = fmtdiff.Process("", nil)
 	fmt.Println("fmt")
 	_, _ = unusedparam.Check("")
 }

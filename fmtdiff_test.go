@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRun(t *testing.T) {
+func TestProcess(t *testing.T) {
 	localPrefix := "github.com/nakabonne/fmtdiff"
 	cases := []struct {
 		name     string
@@ -33,7 +33,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtdiff.Run("", nil)
+	_, _ = fmtdiff.Process("", nil)
 	fmt.Println("fmt")
 	_, _ = unusedparam.Check("")
 }
@@ -49,7 +49,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtdiff.Run("", nil)
+	_, _ = fmtdiff.Process("", nil)
 	fmt.Println("fmt")
 	_, _ = unusedparam.Check("")
 }
@@ -94,7 +94,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtdiff.Run("", nil)
+	_, _ = fmtdiff.Process("", nil)
 	fmt.Println("fmt")
 	_, _ = unusedparam.Check("")
 }
@@ -109,7 +109,7 @@ import (
 )
 
 func _() {
-	_, _ = fmtdiff.Run("", nil)
+	_, _ = fmtdiff.Process("", nil)
 	fmt.Println("fmt")
 	_, _ = unusedparam.Check("")
 }
@@ -122,7 +122,7 @@ func _() {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			f, err := Run(tc.filename, tc.options)
+			f, err := Process(tc.filename, tc.options)
 			assert.Equal(t, tc.wantErr, err != nil)
 			assert.Equal(t, tc.expected, f)
 		})
