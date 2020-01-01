@@ -29,6 +29,23 @@ func main() {
 }
 ```
 
+Combined with [nakabonne/modpath](https://github.com/nakabonne/modpath), and then you can detect the local prefix from the `go.mod`.
+
+```go
+import (
+	"github.com/nakabonne/modpath"
+	
+	"github.com/nakabonne/fmtdiff"
+)
+
+func main() {
+	prefix, _ := modpath.Run("/path/to/foo/bar")
+	fileDiff, _ := fmtdiff.Process("/path/to/foo.go", &fmtdiff.Options{
+		LocalPrefixes:  []string{prefix},
+	})	
+}
+```
+
 ## Thanks
 
 Thanks to [sourcegraph/go-diff](https://github.com/sourcegraph/go-diff) for cool diff parser.
