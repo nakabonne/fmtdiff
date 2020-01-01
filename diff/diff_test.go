@@ -80,3 +80,29 @@ func bar() int {
 		})
 	}
 }
+
+func TestReplaceTempFilename(t *testing.T) {
+	cases := []struct {
+		name     string
+		filename string
+		arg      []byte
+		expected []byte
+		wantErr  bool
+	}{
+		{
+			name:     "line of arg less than three",
+			filename: "foo.txt",
+			arg:      []byte("foo\nbar"),
+			expected: nil,
+			wantErr:  true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			b, err := replaceTempFilename(tc.arg, tc.filename)
+			assert.Equal(t, tc.wantErr, err != nil)
+			assert.Equal(t, tc.expected, b)
+		})
+	}
+}
