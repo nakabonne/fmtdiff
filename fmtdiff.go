@@ -1,3 +1,6 @@
+// Package fmtdiff implements a goimports client as well as a parser that
+// parses the diff between an original file and formatted one.
+// You can use it as a wrapper for golang.org/x/tools/imports.
 package fmtdiff
 
 import (
@@ -64,8 +67,12 @@ type Options struct {
 
 var defaultTabWidth = 8
 
-// Run runs goimports and parses the diff between an original file and a formatted one.
-func Run(filename string, options *Options) (*FileDiff, error) {
+// Process runs goimports and parses the diff between an original file and a formatted one.
+//
+// Note that filename's directory influences which imports can be chosen,
+// so it is important that filename be accurate.
+// To process data “as if” it were in filename, pass the data as a non-nil src.
+func Process(filename string, options *Options) (*FileDiff, error) {
 	fileDiff := &FileDiff{Name: filename}
 	if options == nil {
 		options = &Options{}
