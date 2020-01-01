@@ -118,6 +118,104 @@ func _() {
 			},
 			wantErr: false,
 		},
+		{
+			name:     "no diff",
+			filename: "testdata/fmted.go",
+			options:  &Options{},
+			expected: &FileDiff{
+				Name: "testdata/fmted.go",
+				Before: []byte(`package testdata
+
+func _(m, n int) {
+	return
+}
+
+/*
+
+
+ */
+
+func _() {
+	_ = 1
+}
+`),
+				After: []byte(`package testdata
+
+func _(m, n int) {
+	return
+}
+
+/*
+
+
+ */
+
+func _() {
+	_ = 1
+}
+`),
+				Hunks: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name:     "no options",
+			filename: "testdata/fmted.go",
+			options:  nil,
+			expected: &FileDiff{
+				Name: "testdata/fmted.go",
+				Before: []byte(`package testdata
+
+func _(m, n int) {
+	return
+}
+
+/*
+
+
+ */
+
+func _() {
+	_ = 1
+}
+`),
+				After: []byte(`package testdata
+
+func _(m, n int) {
+	return
+}
+
+/*
+
+
+ */
+
+func _() {
+	_ = 1
+}
+`),
+				Hunks: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name:     "wrong file path specified",
+			filename: "xxx/yyy.go",
+			options:  nil,
+			wantErr:  true,
+		},
+		{
+			name:     "not go source file given",
+			filename: "testdata/empty.txt",
+			options:  nil,
+			wantErr:  true,
+		},
+		{
+			name:     "emtpy go source file given",
+			filename: "testdata/empty.go",
+			options:  nil,
+			wantErr:  true,
+		},
 	}
 
 	for _, tc := range cases {
